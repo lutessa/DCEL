@@ -262,11 +262,11 @@ class DCEL():
         #Correção Fim
 
 
-        
+        #TODO - NOT WORKING
         #UNTESTED: DELETE e / e.twin da lista 
-        for a in self.hEdgeList:
-            if a == e or a == e.twin:
-                 self.hEdgeList.pop(a)
+        # for a in self.hEdgeList:
+        #     if a == e or a == e.twin:
+        #          self.hEdgeList.pop(a)
         
 
 
@@ -330,7 +330,7 @@ class DCEL():
                 if(eF.origem!=self.vList[j]):
                     eF = eF.next
                 else:
-
+ 
                     flag = 1
                     break
             if(flag):
@@ -348,9 +348,14 @@ class DCEL():
         eF.prev = newE
 
         newETwin.face = eF_start.face
+        #TESTE
+        eF_start.face.edge = eF_start
         newF.edge = eF
         eO = eF
-        while(eF.next!=eO):
+        f3 = 0
+        while(eF!=eO or f3==0):
+
+            f3 = 1
             eF.face = newF
             eF = eF.next
         self.fList.append(newF)
