@@ -258,7 +258,7 @@ class DCEL():
         #Correção
         #Garantir que aresta salva na face não é a excluida
         newE1.face.edge = newE1
-        newE2.face.edge = newE2
+        newE1Twin.face.edge = newE1Twin
         #Correção Fim
 
 
