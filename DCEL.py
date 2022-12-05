@@ -15,6 +15,7 @@ class Hedge():
 class Face():
     def __init__(self):
         self.edge = None
+        self.external = None
 
 class Vert():
     def __init__(self,x,y):
@@ -101,6 +102,10 @@ class DCEL():
                     e2 = e2.next
                 self.fList.append(newF)
 
+        self.fList[0].external = False
+
+        self.fList[1].external = True
+
         print("DCEL BUILT")
 
 
@@ -162,8 +167,8 @@ class DCEL():
         arestas.append((x,y))
         arestas.append((e.next.origem.x,e.next.origem.y))
         print(e.next.origem.x,e.next.origem.y)
-        while(e.twin.next!=start_e):
-            e = e.twin.next
+        while(e.prev.twin!=start_e):
+            e = e.prev.twin
             arestas.append((x,y))
             arestas.append((e.next.origem.x,e.next.origem.y))
             print(e.next.origem.x,e.next.origem.y)
@@ -210,6 +215,9 @@ class DCEL():
         while(e.next.origem!=final_v):
             e = e.twin.next
         
+        #teste
+        if e.face.external:
+            e = e.twin
         
         #Cria Semi arestas de um lado
         newE1 = Hedge(newV)
@@ -324,15 +332,16 @@ class DCEL():
             eF_start = e
             eF = eF_start
             f2 =0
-            while(eF!=eF_start or f2==0):  #while(eF.next!=eF_start):
-                f2 =1
+            if not eF_start.face.external:
+                while(eF!=eF_start or f2==0):  #while(eF.next!=eF_start):
+                    f2 =1
 
-                if(eF.origem!=self.vList[j]):
-                    eF = eF.next
-                else:
- 
-                    flag = 1
-                    break
+                    if(eF.origem!=self.vList[j]):
+                        eF = eF.next
+                    else:
+
+                        flag = 1
+                        break
             if(flag):
                 break
             e = e.twin.next
@@ -359,6 +368,7 @@ class DCEL():
             eF.face = newF
             eF = eF.next
         self.fList.append(newF)
+        newF.external = False
 
         vertice = np.append(vertice,[np.float32(self.vList[i].x),np.float32(self.vList[i].y),np.float32(0.0),np.float32(1.0),np.float32(0.0),np.float32(0.0)])
         vertice = np.append(vertice,[np.float32(self.vList[j].x),np.float32(self.vList[j].y),np.float32(0.0),np.float32(1.0),np.float32(0.0),np.float32(0.0)])
@@ -370,3 +380,34 @@ class DCEL():
         # final 1 0 0 cor?
         # vertice[2] = 0 , z? pq n 1?
         return vertice , edges
+
+
+    def findFace(self, px, py):
+        """
+            starts from self.listV[0]
+            edgelist[0]
+            if left ->
+                e = next
+            else
+                e = twin
+            Se der a volta na face 
+                p interior a essa face
+        """
+        start_e = self.vList[0].eIncidente
+        f = 0
+        this_e = start_e
+        while (not (start_e==this_e and f!=0)):
+            f = 1
+            if left((this_e.origem.x,this_e.origem.y),(this_e.next.origem.x,this_e.next.origem.y),(px,py)):
+                this_e = this_e.next
+                print("left")
+            else:
+                print("Not left")
+                start_e = this_e.twin
+                this_e = this_e.twin
+                
+                f = 0
+        
+        face = this_e.face
+
+        return face
